@@ -4,14 +4,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  // Pastikan input tidak kosong sebelum fetch
   if (!email || !password) {
     alert("Email dan Password harus diisi!");
     return;
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/login", {
+    // --- PERBAIKAN: Gunakan /api/login (tanpa localhost) ---
+    // Ini agar script otomatis memanggil server tempat dia di-host (Vercel)
+    const response = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -22,23 +23,17 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     if (response.ok) {
       alert("Selamat Datang!");
 
-      // 1. Simpan status ke localStorage agar index.js bisa mendeteksi login
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", email);
-      // Mengambil nama depan (misal: "haikal@mail.com" jadi "haikal")
       localStorage.setItem("userName", email.split("@")[0]);
 
-      // 2. Redirect ke index.html
-      // Karena semua file sudah sejajar di folder SERVER, cukup panggil namanya
+      // Redirect ke halaman utama
       window.location.href = "index.html";
     } else {
-      // Menampilkan pesan error dari backend jika ada (misal: Password Salah)
       alert(data.message || "Login gagal, periksa email/password.");
     }
   } catch (error) {
     console.error("Error saat login:", error);
-    alert(
-      "Gagal terhubung ke server. Pastikan 'node server.js' jalan di terminal!",
-    );
+    alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
   }
 });
