@@ -4,14 +4,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    alert("Email dan Password harus diisi!");
-    return;
-  }
-
   try {
-    // --- PERBAIKAN: Gunakan /api/login (tanpa localhost) ---
-    // Ini agar script otomatis memanggil server tempat dia di-host (Vercel)
+    // Memanggil API tanpa localhost agar otomatis menyesuaikan dengan domain Vercel
     const response = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -22,18 +16,15 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     if (response.ok) {
       alert("Selamat Datang!");
-
       localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", email);
       localStorage.setItem("userName", email.split("@")[0]);
-
-      // Redirect ke halaman utama
-      window.location.href = "index.html";
+      
+      // Pastikan file index.html sudah ada di halaman depan GitHub
+      window.location.href = "index.html"; 
     } else {
-      alert(data.message || "Login gagal, periksa email/password.");
+      alert(data.message || "Login gagal!");
     }
   } catch (error) {
-    console.error("Error saat login:", error);
-    alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
+    alert("Gagal terhubung ke server cloud.");
   }
 });
