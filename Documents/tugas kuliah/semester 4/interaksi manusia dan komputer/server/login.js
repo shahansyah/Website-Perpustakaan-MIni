@@ -4,6 +4,12 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
+  // Pastikan input tidak kosong sebelum fetch
+  if (!email || !password) {
+    alert("Email dan Password harus diisi!");
+    return;
+  }
+
   try {
     const response = await fetch("http://localhost:5000/api/login", {
       method: "POST",
@@ -15,14 +21,24 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     if (response.ok) {
       alert("Selamat Datang!");
+
+      // 1. Simpan status ke localStorage agar index.js bisa mendeteksi login
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", email);
-      localStorage.setItem("userName", email.split("@")[0]); // Simpan nama depan sebagai userName
-      window.location.href = "http://localhost:5500/";
+      // Mengambil nama depan (misal: "haikal@mail.com" jadi "haikal")
+      localStorage.setItem("userName", email.split("@")[0]);
+
+      // 2. Redirect ke index.html
+      // Karena semua file sudah sejajar di folder SERVER, cukup panggil namanya
+      window.location.href = "index.html";
     } else {
-      alert(data.message);
+      // Menampilkan pesan error dari backend jika ada (misal: Password Salah)
+      alert(data.message || "Login gagal, periksa email/password.");
     }
   } catch (error) {
-    alert("Cek terminal! Apakah node server.js sudah jalan?");
+    console.error("Error saat login:", error);
+    alert(
+      "Gagal terhubung ke server. Pastikan 'node server.js' jalan di terminal!",
+    );
   }
 });

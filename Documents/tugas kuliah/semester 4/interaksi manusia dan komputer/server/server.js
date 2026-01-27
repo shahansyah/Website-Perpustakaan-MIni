@@ -1,16 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Koneksi ke MongoDB Atlas
-const mongoURI = 'mongodb://localhost:27017/pustakaMini'; // Ganti dengan URI MongoDB Atlas Anda
+// Melayani File Statis
+app.use(express.static(__dirname)); 
+
+// --- PERBAIKAN: Koneksi ke MongoDB Atlas ---
+// Menggunakan link yang sudah kamu tes di Compass tadi
+const mongoURI = 'mongodb+srv://shahansyah:Integrated24@pustakaid.qlebj9i.mongodb.net/PustakaMini?retryWrites=true&w=majority'; 
+
 mongoose.connect(mongoURI)
-    .then(() => console.log('Terhubung ke MongoDB Atlas!'))
-    .catch(err => console.error('Gagal konek:', err));
+    .then(() => console.log('Terhubung ke MongoDB Atlas Cloud!'))
+    .catch(err => console.error('Gagal konek ke Atlas:', err));
 
 // Skema Database User
 const userSchema = new mongoose.Schema({
@@ -18,6 +24,11 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
 });
 const User = mongoose.model("User", userSchema);
+
+// Route Utama
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
 
 // API Registrasi
 app.post("/api/register", async (req, res) => {
@@ -45,4 +56,10 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-app.listen(5000, () => console.log("Server jalan di port 5000"));
+// Penyesuaian Port untuk Vercel
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log("========================================");
+    console.log(`Server PustakaMini jalan di port ${PORT}`);
+    console.log("========================================");
+});
